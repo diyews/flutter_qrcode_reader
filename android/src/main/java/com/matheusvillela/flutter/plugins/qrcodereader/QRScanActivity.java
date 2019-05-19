@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.view.View;
+import android.view.WindowManager;
 
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 
@@ -40,6 +42,13 @@ public class QRScanActivity extends Activity implements QRCodeReaderView.OnQRCod
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setContentView(R.layout.activity_qr_read);
         view = (QRCodeReaderView) findViewById(R.id.activity_qr_read_reader);
         Intent intent = getIntent();
@@ -48,6 +57,13 @@ public class QRScanActivity extends Activity implements QRCodeReaderView.OnQRCod
         if (intent.getBooleanExtra(EXTRA_FORCE_FOCUS, false)) {
             view.forceAutoFocus();
         }
+        View revertButton = findViewById(R.id.flat_button_revert);
+        revertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onRevertBUttonClick();
+            }
+        });
         view.setAutofocusInterval(intent.getIntExtra(EXTRA_FOCUS_INTERVAL, 2000));
         view.setTorchEnabled(intent.getBooleanExtra(EXTRA_TORCH_ENABLED, false));
     }
@@ -75,5 +91,10 @@ public class QRScanActivity extends Activity implements QRCodeReaderView.OnQRCod
     protected void onPause() {
         super.onPause();
         view.stopCamera();
+    }
+
+    public void onRevertBUttonClick() {
+        setResult(Activity.RESULT_CANCELED);
+        finish();
     }
 }
